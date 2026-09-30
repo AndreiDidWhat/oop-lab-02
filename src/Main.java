@@ -77,6 +77,16 @@ public class Main {
                     constructor.setAccessible(true);
                     return constructor.newInstance();
                 } catch (Exception e) {
+                    try {
+                        var constructors = type.getDeclaredConstructors();
+                        if (constructors.length > 0) {
+                            var constructor = constructors[0];
+                            constructor.setAccessible(true);
+                            Object[] constructorArgs = generateArguments(constructor.getParameterTypes());
+                            return constructor.newInstance(constructorArgs);
+                        }
+                    } catch (Exception _) {}
+
                     return new Object();
                 }
         }
