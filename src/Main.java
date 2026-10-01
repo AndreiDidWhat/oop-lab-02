@@ -72,6 +72,10 @@ public class Main {
             case "java.lang.String":
                 return "string";
             default:
+                if (Modifier.isAbstract(type.getModifiers())) {
+                    return null;
+                }
+
                 var constructors = type.getDeclaredConstructors();
                 boolean hasDefaultConstructor = false;
                 for (var c : constructors) {
@@ -92,9 +96,11 @@ public class Main {
                             Object[] constructorArgs = generateArguments(constructor.getParameterTypes());
                             return constructor.newInstance(constructorArgs);
                     }
-                } catch (Exception _) {}
+                } catch (Exception _) {
+                    return null;
+                }
 
-                return new Object();
+                return null;
         }
     }
 }
