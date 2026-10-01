@@ -72,23 +72,29 @@ public class Main {
             case "java.lang.String":
                 return "string";
             default:
+                var constructors = type.getDeclaredConstructors();
+                boolean hasDefaultConstructor = false;
+                for (var c : constructors) {
+                    if (c.getParameterCount() == 0) {
+                        hasDefaultConstructor = true;
+                        break;
+                    }
+                }
+
                 try {
-                    var constructor = type.getDeclaredConstructor();
-                    constructor.setAccessible(true);
-                    return constructor.newInstance();
-                } catch (Exception e) {
-                    try {
-                        var constructors = type.getDeclaredConstructors();
-                        if (constructors.length > 0) {
+                    if (hasDefaultConstructor) {
+                        var constructor = type.getDeclaredConstructor();
+                        constructor.setAccessible(true);
+                        return constructor.newInstance();
+                    } else if (constructors.length > 0) {
                             var constructor = constructors[0];
                             constructor.setAccessible(true);
                             Object[] constructorArgs = generateArguments(constructor.getParameterTypes());
                             return constructor.newInstance(constructorArgs);
-                        }
-                    } catch (Exception _) {}
+                    }
+                } catch (Exception _) {}
 
-                    return new Object();
-                }
+                return new Object();
         }
     }
 }
